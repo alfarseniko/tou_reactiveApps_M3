@@ -2,6 +2,9 @@
 /*--------------------IMPORTS-------------------- */
 /** ################################################### */
 import * as THREE from "three";
+import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { IProject, Role, Status } from "./class/Project";
 import { ProjectsManager } from "./class/ProjectsManager";
 import { ErrorPopup } from "./class/ErrorPopup";
@@ -214,14 +217,78 @@ const viewerContainer = document.getElementById(
   "viewer-container"
 ) as HTMLDivElement;
 const containerDimensions = viewerContainer.getBoundingClientRect();
-const width = containerDimensions.width;
-const height = containerDimensions.height;
-const aspectRatio = width / height;
+
 const fov = 75;
-const camera = new THREE.PerspectiveCamera(fov, aspectRatio);
+const camera = new THREE.PerspectiveCamera(fov);
+camera.position.z = 5;
+camera.near = 0.0001;
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+function resizeViewer() {
+  const containerDimensions = viewerContainer.getBoundingClientRect();
+  renderer.setSize(containerDimensions.width, containerDimensions.height);
+  camera.aspect = containerDimensions.width / containerDimensions.height;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener("resize", () => resizeViewer());
+resizeViewer();
 viewerContainer.append(renderer.domElement);
-renderer.setSize(width, height);
+renderer.setSize(containerDimensions.width, containerDimensions.height);
 
-renderer.render(scene, camera);
+const boxGeometry = new THREE.BoxGeometry();
+const material = new THREE.MeshStandardMaterial();
+const cube = new THREE.Mesh(boxGeometry, material);
+
+const directionalLightTop = new THREE.DirectionalLight();
+const ambientLight = new THREE.AmbientLight();
+ambientLight.intensity = 0.4;
+const spotLight = new THREE.SpotLight();
+
+scene.add(ambientLight, directionalLightTop, spotLight);
+
+const cameraControls = new OrbitControls(camera, viewerContainer);
+
+function renderScene() {
+  renderer.render(scene, camera);
+  requestAnimationFrame(renderScene);
+}
+
+renderScene();
+
+const dirLightTopHelper = new THREE.DirectionalLightHelper(
+  directionalLightTop,
+  0
+);
+
+const axes = new THREE.AxesHelper();
+const grid = new THREE.GridHelper();
+grid.material.transparent = true;
+grid.material.opacity = 0.5;
+grid.material.color = new THREE.Color("#fff");
+
+scene.add(axes, grid, dirLightTopHelper);
+
+const gui = new GUI();
+const cubeControls = gui.addFolder("Cube");
+cubeControls.add(cube.position, "x", -10, 10, 0.1);
+cubeControls.add(cube.position, "y", -10, 10, 0.1);
+cubeControls.add(cube.position, "z", -10, 10, 0.1);
+cubeControls.add(cube, "visible");
+cubeControls.addColor(cube.material, "color");
+const dirLightControls = gui.addFolder("Directional Light");
+dirLightControls.addColor(directionalLightTop, "color");
+dirLightControls.add(directionalLightTop.position, "x", -10, 10, 0.1);
+dirLightControls.add(directionalLightTop.position, "y", -10, 10, 0.1);
+dirLightControls.add(directionalLightTop.position, "z", -10, 10, 0.1);
+dirLightControls.add(directionalLightTop, "intensity", 0, 1, 0.1);
+const spotLightControls = gui.addFolder("Spot Light");
+spotLightControls.addColor(spotLight, "color");
+spotLightControls.add(spotLight.position, "x", -10, 10, 0.1);
+spotLightControls.add(spotLight.position, "y", -10, 10, 0.1);
+spotLightControls.add(spotLight.position, "z", -10, 10, 0.1);
+spotLightControls.add(spotLight, "intensity", 0, 1, 0.1);
+
+const loader = new GLTFLoader();
+loader.load("../assets/carModel/scene.gltf", (gltf) => {
+  scene.add(gltf.scene);
+});
