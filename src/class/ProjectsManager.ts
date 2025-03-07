@@ -13,6 +13,9 @@ export class ProjectsManager {
   list: Project[] = [];
   // HTML Container for all project cards
   currentProject: string;
+  // Custom callback function / event
+  onProjectCreated = () => {};
+  onProjectDeleted = () => {};
 
   /** ################################################### */
   /**-------------------CONSTRUCTOR---------------------- */
@@ -66,18 +69,8 @@ export class ProjectsManager {
     if (this.list.length == 1) {
       this.currentProject = this.list[0].id;
     }
-    // EventListener for going to details page
-    /*this.ui.addEventListener("click", () => {
-      const projectsPage = document.getElementById("projects-page");
-      const detailsPage = document.getElementById("project-details");
-      if (!projectsPage || !detailsPage) {
-        return;
-      }
-      projectsPage.style.display = "none";
-      detailsPage.style.display = "flex";
-      // To provide project specific info on details page
-      this.setDetailsPage(project);
-    });*/
+
+    this.onProjectCreated();
 
     return project;
   }
@@ -205,6 +198,7 @@ export class ProjectsManager {
     });
     // Replacing the whole list with 'remaining' which doesnt contain the deleted element
     this.list = remaining;
+    this.onProjectDeleted();
   }
   /** ################################################### */
   /**-------------------TOTAL COST----------------------- */

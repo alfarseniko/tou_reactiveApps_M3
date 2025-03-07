@@ -3,11 +3,11 @@ import { ErrorPopup } from "../class/ErrorPopup";
 import { Project, IProject, Role, Status } from "../class/Project";
 import { ProjectsManager } from "../class/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function ProjectsPage() {
   // Initializing projectsManager
-  const projectsManager = new ProjectsManager();
+  const [projectsManager] = useState(new ProjectsManager());
   // Toggle modal function
   function toggleModal(id: string) {
     const modal = document.getElementById(id) as HTMLDialogElement;
@@ -19,6 +19,16 @@ export function ProjectsPage() {
   }
 
   const [projects, setProjects] = useState<Project[]>(projectsManager.list);
+  projectsManager.onProjectCreated = () => {
+    setProjects([...projectsManager.list]);
+  };
+  projectsManager.onProjectDeleted = () => {
+    setProjects([...projectsManager.list]);
+  };
+
+  useEffect(() => {
+    console.log("The project state has been updated", projects);
+  }, [projects]);
 
   const onNewProjectClick = () => {
     toggleModal("new-project-modal");
@@ -55,7 +65,6 @@ export function ProjectsPage() {
       const project = projectsManager.newProject(data);
       projectForm.reset();
       toggleModal("new-project-modal");
-      console.log(project);
     } catch (err) {
       new ErrorPopup(err.message);
     }

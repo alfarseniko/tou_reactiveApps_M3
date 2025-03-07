@@ -306,9 +306,9 @@ spotLightControls.addColor(spotLight, "color");
 spotLightControls.add(spotLight.position, "x", -10, 10, 0.1);
 spotLightControls.add(spotLight.position, "y", -10, 10, 0.1);
 spotLightControls.add(spotLight.position, "z", -10, 10, 0.1);
-spotLightControls.add(spotLight, "intensity", 0, 1, 0.1);*/
+spotLightControls.add(spotLight, "intensity", 0, 1, 0.1);
 
 const loader = new GLTFLoader();
 loader.load("../assets/carModel/scene.gltf", (gltf) => {
   scene.add(gltf.scene);
-});
+});*/
