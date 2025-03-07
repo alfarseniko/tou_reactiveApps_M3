@@ -12,18 +12,16 @@ export class ProjectsManager {
   // A list of projects in the app initialized empty
   list: Project[] = [];
   // HTML Container for all project cards
-  ui: HTMLElement;
   currentProject: string;
 
   /** ################################################### */
   /**-------------------CONSTRUCTOR---------------------- */
   /** ################################################### */
   // CONTAINER is the HTMLElement which will house all the project cards
-  constructor(container: HTMLElement) {
+  constructor() {
     /* The container will be assigned to the UI of the object
         and will be replaced with the HTML in the main file to
         be rendered as project cards */
-    this.ui = container;
 
     /* The following code has been written to create a default project
        when the project starts */
@@ -35,7 +33,7 @@ export class ProjectsManager {
       finishDate: new Date(),
     };
     const project = this.newProject(data);
-    project.ui.click();
+    //project.ui.click();
   }
 
   /** ################################################### */
@@ -62,14 +60,14 @@ export class ProjectsManager {
     const project = new Project(data);
     /*  project.UI is the PROJECT CARD
         this.UI is the container for the project cards */
-    this.ui.append(project.ui);
+    //this.ui.append(project.ui);
     // data is stored in the class
     this.list.push(project);
     if (this.list.length == 1) {
       this.currentProject = this.list[0].id;
     }
     // EventListener for going to details page
-    this.ui.addEventListener("click", () => {
+    /*this.ui.addEventListener("click", () => {
       const projectsPage = document.getElementById("projects-page");
       const detailsPage = document.getElementById("project-details");
       if (!projectsPage || !detailsPage) {
@@ -79,7 +77,7 @@ export class ProjectsManager {
       detailsPage.style.display = "flex";
       // To provide project specific info on details page
       this.setDetailsPage(project);
-    });
+    });*/
 
     return project;
   }
@@ -120,7 +118,7 @@ export class ProjectsManager {
     this.deleteProject(this.currentProject);
     const edittedProject = project.editProject(data);
     this.setDetailsPage(edittedProject);
-    this.ui.append(edittedProject.ui);
+    /*this.ui.append(edittedProject.ui);
     // data is stored in the class
     this.list.push(edittedProject);
     // EventListener for going to details page
@@ -134,7 +132,7 @@ export class ProjectsManager {
       detailsPage.style.display = "flex";
       // To provide project specific info on details page
       this.setDetailsPage(edittedProject);
-    });
+    });*/
   }
   /** ################################################### */
   /**-----------SETTING DETAILS PAGE DATA---------------- */

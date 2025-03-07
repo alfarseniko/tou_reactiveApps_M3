@@ -1,6 +1,10 @@
 /** ################################################### */
 /*--------------------IMPORTS-------------------- */
 /** ################################################### */
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { Sidebar } from "./react-components/Sidebar";
+import { ProjectsPage } from "./react-components/ProjectsPage";
 import * as THREE from "three";
 import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -9,6 +13,19 @@ import { IProject, Role, Status } from "./class/Project";
 import { ProjectsManager } from "./class/ProjectsManager";
 import { ErrorPopup } from "./class/ErrorPopup";
 import { ITodo } from "./class/Project";
+
+/** ################################################### */
+/*--------------------REACT---------------------------- */
+/** ################################################### */
+
+const rootElement = document.getElementById("app") as HTMLDivElement;
+const appRoot = ReactDOM.createRoot(rootElement);
+appRoot.render(
+  <>
+    <Sidebar />
+    <ProjectsPage />
+  </>
+);
 
 /** ################################################### */
 /*--------------------FUNCTIONS-------------------- */
@@ -44,7 +61,7 @@ if (newProjectBtn) {
 /*----------------PROJECTS MANAGER CLASS-------------------- */
 /** ################################################### */
 const projectsListUi = document.getElementById("projects-list") as HTMLElement;
-const projectsManager = new ProjectsManager(projectsListUi);
+const projectsManager = new ProjectsManager();
 
 /** ################################################### */
 /*----------------IMPORT/EXPORT BUTTONS-------------------- */
@@ -74,15 +91,15 @@ if (importButton) {
 const projectsButton = document.getElementById(
   "projects-button"
 ) as HTMLDataListElement;
-projectsButton.addEventListener("click", () => {
-  const projectsPage = document.getElementById("projects-page");
-  const detailsPage = document.getElementById("project-details");
-  if (!projectsPage || !detailsPage) {
-    return;
-  }
-  projectsPage.style.display = "flex";
-  detailsPage.style.display = "none";
-});
+// projectsButton.addEventListener("click", () => {
+//   const projectsPage = document.getElementById("projects-page");
+//   const detailsPage = document.getElementById("project-details");
+//   if (!projectsPage || !detailsPage) {
+//     return;
+//   }
+//   projectsPage.style.display = "flex";
+//   detailsPage.style.display = "none";
+// });
 /** ################################################### */
 /*----------BUTTON TO OPEN EDIT PROJECT FORM----------- */
 /** ################################################### */
@@ -216,6 +233,9 @@ const scene = new THREE.Scene();
 const viewerContainer = document.getElementById(
   "viewer-container"
 ) as HTMLDivElement;
+if (!viewerContainer) {
+  console.error("Viewer container not found!");
+}
 const containerDimensions = viewerContainer.getBoundingClientRect();
 
 const fov = 75;
@@ -268,7 +288,7 @@ grid.material.color = new THREE.Color("#fff");
 
 scene.add(axes, grid, dirLightTopHelper);
 
-const gui = new GUI();
+/*const gui = new GUI();
 const cubeControls = gui.addFolder("Cube");
 cubeControls.add(cube.position, "x", -10, 10, 0.1);
 cubeControls.add(cube.position, "y", -10, 10, 0.1);
@@ -286,7 +306,7 @@ spotLightControls.addColor(spotLight, "color");
 spotLightControls.add(spotLight.position, "x", -10, 10, 0.1);
 spotLightControls.add(spotLight.position, "y", -10, 10, 0.1);
 spotLightControls.add(spotLight.position, "z", -10, 10, 0.1);
-spotLightControls.add(spotLight, "intensity", 0, 1, 0.1);
+spotLightControls.add(spotLight, "intensity", 0, 1, 0.1);*/
 
 const loader = new GLTFLoader();
 loader.load("../assets/carModel/scene.gltf", (gltf) => {
