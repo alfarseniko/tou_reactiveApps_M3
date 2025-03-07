@@ -30,6 +30,10 @@ export function ProjectsPage() {
     console.log("The project state has been updated", projects);
   }, [projects]);
 
+  const projectCards = projects.map((project) => {
+    return <ProjectCard project={project} key={project.id} />;
+  });
+
   const onNewProjectClick = () => {
     toggleModal("new-project-modal");
   };
@@ -187,9 +191,7 @@ export function ProjectsPage() {
           </div>
         </div>
       </header>
-      <div id="projects-list">
-        <ProjectCard />
-      </div>
+      <div id="projects-list">{projectCards}</div>
     </div>
   );
 }
