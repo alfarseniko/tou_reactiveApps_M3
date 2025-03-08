@@ -1,8 +1,27 @@
 import * as React from "react";
+import { ITodo, Project, Status } from "../class/Project";
 
-export default function Todo() {
+interface Props {
+  todo: ITodo;
+}
+
+export default function Todo(props: Props) {
+  function todoColour(status: Status) {
+    if (status == "Active") {
+      return "#007bff";
+    }
+    if (status == "Finished") {
+      return "#28a745";
+    } else {
+      return "#f4c542";
+    }
+  }
+
   return (
-    <div className="todo-item">
+    <div
+      className="todo-item"
+      style={{ backgroundColor: todoColour(props.todo.status) }}
+    >
       <div
         style={{
           display: "flex",
@@ -21,9 +40,11 @@ export default function Todo() {
           >
             construction
           </span>
-          <p>$</p>
+          <p>{props.todo.description}</p>
         </div>
-        <p style={{ textWrap: "nowrap", marginLeft: 10 }}>$</p>
+        <p style={{ textWrap: "nowrap", marginLeft: 10 }}>
+          {props.todo.finishDate.toDateString()}
+        </p>
       </div>
     </div>
   );

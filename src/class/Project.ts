@@ -60,7 +60,7 @@ export class Project implements IProject {
     return this;
   }
   addTodo(data: ITodo) {
-    this.setTodoUI(data);
+    // this.setTodoUI(data);
     this.todo.push(data);
   }
   private setTodoUI(data: ITodo) {

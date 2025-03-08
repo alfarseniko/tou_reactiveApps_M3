@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { ProjectsManager } from "../class/ProjectsManager";
-import { Router, useParams } from "react-router-dom";
+import { Link, Router, useParams } from "react-router-dom";
 import Todo from "./Todo";
 import EditProjectForm from "./forms/EditProjectForm";
 import AddTodoForm from "./forms/AddTodoForm";
@@ -44,17 +44,25 @@ export default function ProjectDetails(props: Props) {
     console.log("The following project was found:", project);
   }
 
+  const todoItems = project.todo.map((todo) => {
+    return <Todo todo={todo} />;
+  });
+
   const onEditProjectClick = () => {
     toggleModal("edit-project-modal");
-    console.log("Edit project button clicked.");
+  };
+
+  const onAddTodoClick = () => {
+    toggleModal("add-todo-modal");
+    console.log(props.projectsManager.getProject);
   };
   return (
     <div className="page" id="project-details">
       <dialog id="edit-project-modal">
         <EditProjectForm projectsManager={props.projectsManager} />
       </dialog>
-      <dialog id="add-todo-modal" onClick={onEditProjectClick}>
-        <AddTodoForm />
+      <dialog id="add-todo-modal">
+        <AddTodoForm projectsManager={props.projectsManager} />
       </dialog>
       <header>
         <div>
@@ -190,7 +198,11 @@ export default function ProjectDetails(props: Props) {
                     style={{ width: "100%" }}
                   />
                 </div>
-                <span id="add-todo-button" className="material-icons-round">
+                <span
+                  id="add-todo-button"
+                  className="material-icons-round"
+                  onClick={onAddTodoClick}
+                >
                   add
                 </span>
               </div>
@@ -204,7 +216,7 @@ export default function ProjectDetails(props: Props) {
                 rowGap: 20,
               }}
             >
-              <Todo />
+              {todoItems}
             </div>
           </div>
         </div>
