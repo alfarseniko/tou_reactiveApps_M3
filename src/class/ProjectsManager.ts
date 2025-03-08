@@ -17,6 +17,7 @@ export class ProjectsManager {
   onProjectCreated = () => {};
   onProjectDeleted = () => {};
   onProjectEditted = () => {};
+  onTodoCreated = () => {};
 
   /** ################################################### */
   /**-------------------CONSTRUCTOR---------------------- */
@@ -86,7 +87,7 @@ export class ProjectsManager {
       return;
     }
     project.addTodo(data);
-    console.log(project);
+    this.onTodoCreated();
   }
 
   /** ################################################### */

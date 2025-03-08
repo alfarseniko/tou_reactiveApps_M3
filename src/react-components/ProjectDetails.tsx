@@ -28,6 +28,9 @@ export default function ProjectDetails(props: Props) {
   props.projectsManager.onProjectEditted = () => {
     setProjects([...props.projectsManager.list]);
   };
+  props.projectsManager.onTodoCreated = () => {
+    setProjects([...props.projectsManager.list]);
+  };
 
   const routeParams = useParams<{ id: string }>();
   if (!routeParams.id) {
@@ -97,7 +100,9 @@ export default function ProjectDetails(props: Props) {
                   padding: 12,
                   textTransform: "uppercase",
                 }}
-              />
+              >
+                {project.name[0] + project.name[1]}
+              </p>
               <button
                 id="edit-project-button"
                 className="btn-secondary"
