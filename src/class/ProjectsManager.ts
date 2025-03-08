@@ -16,6 +16,7 @@ export class ProjectsManager {
   // Custom callback function / event
   onProjectCreated = () => {};
   onProjectDeleted = () => {};
+  onProjectEditted = () => {};
 
   /** ################################################### */
   /**-------------------CONSTRUCTOR---------------------- */
@@ -103,14 +104,15 @@ export class ProjectsManager {
       throw new Error(`The project title should be more than 5 characters.`);
     }
     // DELETING UI CARD FROM MAIN PAGE
-    const cardToDelete = document.getElementById(
-      this.currentProject
-    ) as HTMLDivElement;
-    cardToDelete.remove();
+    // const cardToDelete = document.getElementById(
+    //   this.currentProject
+    // ) as HTMLDivElement;
+    // cardToDelete.remove();
     // Create a function to use project data to edit the project database
-    this.deleteProject(this.currentProject);
+    // this.deleteProject(this.currentProject);
     const edittedProject = project.editProject(data);
-    this.setDetailsPage(edittedProject);
+    // this.setDetailsPage(edittedProject);
+    this.onProjectEditted();
     /*this.ui.append(edittedProject.ui);
     // data is stored in the class
     this.list.push(edittedProject);

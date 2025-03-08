@@ -56,7 +56,6 @@ export class Project implements IProject {
     for (const key in data) {
       this[key] = data[key];
     }
-    this.setUi();
 
     return this;
   }

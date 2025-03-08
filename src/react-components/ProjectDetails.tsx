@@ -1,12 +1,34 @@
 import * as React from "react";
+import { useState } from "react";
 import { ProjectsManager } from "../class/ProjectsManager";
 import { Router, useParams } from "react-router-dom";
+import Todo from "./Todo";
+import EditProjectForm from "./forms/EditProjectForm";
+import AddTodoForm from "./forms/AddTodoForm";
+import { Project } from "../class/Project";
 
 interface Props {
   projectsManager: ProjectsManager;
 }
 
 export default function ProjectDetails(props: Props) {
+  // Toggle modal function
+  function toggleModal(id: string) {
+    const modal = document.getElementById(id) as HTMLDialogElement;
+    if (modal.open) {
+      modal.close();
+    } else {
+      modal.showModal();
+    }
+  }
+
+  const [projects, setProjects] = useState<Project[]>(
+    props.projectsManager.list
+  );
+  props.projectsManager.onProjectEditted = () => {
+    setProjects([...props.projectsManager.list]);
+  };
+
   const routeParams = useParams<{ id: string }>();
   if (!routeParams.id) {
     console.log("The ID parameter was not found.");
@@ -21,161 +43,18 @@ export default function ProjectDetails(props: Props) {
   } else {
     console.log("The following project was found:", project);
   }
+
+  const onEditProjectClick = () => {
+    toggleModal("edit-project-modal");
+    console.log("Edit project button clicked.");
+  };
   return (
     <div className="page" id="project-details">
       <dialog id="edit-project-modal">
-        <form id="edit-project-form">
-          <h2>Edit Project</h2>
-          <div className="input-list">
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">apartment</span>
-                Name
-              </label>
-              <input
-                required
-                name="name"
-                type="text"
-                placeholder="What's the name of your project?"
-              />
-              <p
-                style={{
-                  color: "gray",
-                  fontSize: "var(--font-sm)",
-                  marginTop: 5,
-                  fontStyle: "italic",
-                }}
-              >
-                TIP: Give it a short name
-              </p>
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">subject</span>
-                Description
-              </label>
-              <textarea
-                name="description"
-                cols={30}
-                rows={5}
-                placeholder="Give your project a nice description! So people is jealous about it."
-                defaultValue={""}
-              />
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">person</span>Role
-              </label>
-              <select name="role">
-                <option>Architect</option>
-                <option>Engineer</option>
-                <option>Developer</option>
-              </select>
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">
-                  not_listed_location
-                </span>
-                Status
-              </label>
-              <select name="status">
-                <option>Pending</option>
-                <option>Active</option>
-                <option>Finished</option>
-              </select>
-            </div>
-            <div className="form-field-container">
-              <label htmlFor="finishDate">
-                <span className="material-icons-round">calendar_month</span>
-                Finish Date
-              </label>
-              <input name="finishDate" type="date" />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                margin: "10px 0px 10px auto",
-                columnGap: 10,
-              }}
-            >
-              <button
-                id="close-button-edit-form"
-                type="button"
-                style={{ backgroundColor: "transparent" }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{ backgroundColor: "rgb(18, 145, 18)" }}
-              >
-                Accept
-              </button>
-            </div>
-          </div>
-        </form>
+        <EditProjectForm projectsManager={props.projectsManager} />
       </dialog>
-      <dialog id="add-todo-modal">
-        <form id="add-todo-form">
-          <h2>ToDo</h2>
-          <div className="input-list">
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">subject</span>
-                Description
-              </label>
-              <textarea
-                name="description"
-                cols={30}
-                rows={2}
-                placeholder="Describe your task in detail."
-                defaultValue={""}
-              />
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">
-                  not_listed_location
-                </span>
-                Status
-              </label>
-              <select name="status">
-                <option>Pending</option>
-                <option>Active</option>
-                <option>Finished</option>
-              </select>
-            </div>
-            <div className="form-field-container">
-              <label htmlFor="finishDate">
-                <span className="material-icons-round">calendar_month</span>
-                Finish Date
-              </label>
-              <input name="finishDate" type="date" />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                margin: "10px 0px 10px auto",
-                columnGap: 10,
-              }}
-            >
-              <button
-                id="close-button-edit-form"
-                type="button"
-                style={{ backgroundColor: "transparent" }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{ backgroundColor: "rgb(18, 145, 18)" }}
-              >
-                Accept
-              </button>
-            </div>
-          </div>
-        </form>
+      <dialog id="add-todo-modal" onClick={onEditProjectClick}>
+        <AddTodoForm />
       </dialog>
       <header>
         <div>
@@ -211,7 +90,11 @@ export default function ProjectDetails(props: Props) {
                   textTransform: "uppercase",
                 }}
               />
-              <button id="edit-project-button" className="btn-secondary">
+              <button
+                id="edit-project-button"
+                className="btn-secondary"
+                onClick={onEditProjectClick}
+              >
                 <p style={{ width: "100%" }}>Edit</p>
               </button>
             </div>
@@ -320,7 +203,9 @@ export default function ProjectDetails(props: Props) {
                 padding: "10px 30px",
                 rowGap: 20,
               }}
-            ></div>
+            >
+              <Todo />
+            </div>
           </div>
         </div>
         <div
