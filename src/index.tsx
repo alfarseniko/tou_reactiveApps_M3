@@ -3,6 +3,7 @@
 /** ################################################### */
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
+import * as Router from "react-router-dom";
 import { Sidebar } from "./react-components/Sidebar";
 import { ProjectsPage } from "./react-components/ProjectsPage";
 import * as THREE from "three";
@@ -13,17 +14,32 @@ import { IProject, Role, Status } from "./class/Project";
 import { ProjectsManager } from "./class/ProjectsManager";
 import { ErrorPopup } from "./class/ErrorPopup";
 import { ITodo } from "./class/Project";
+import ProjectDetails from "./react-components/ProjectDetails";
 
 /** ################################################### */
 /*--------------------REACT---------------------------- */
 /** ################################################### */
 
+//Initializing projectsManager for global use
+const projectsManager = new ProjectsManager();
+
 const rootElement = document.getElementById("app") as HTMLDivElement;
 const appRoot = ReactDOM.createRoot(rootElement);
 appRoot.render(
   <>
-    <Sidebar />
-    <ProjectsPage />
+    <Router.BrowserRouter>
+      <Sidebar />
+      <Router.Routes>
+        <Router.Route
+          path="/"
+          element={<ProjectsPage projectsManager={projectsManager} />}
+        />
+        <Router.Route
+          path="/project/:id"
+          element={<ProjectDetails projectsManager={projectsManager} />}
+        />
+      </Router.Routes>
+    </Router.BrowserRouter>
   </>
 );
 
@@ -61,7 +77,6 @@ if (newProjectBtn) {
 /*----------------PROJECTS MANAGER CLASS-------------------- */
 /** ################################################### */
 const projectsListUi = document.getElementById("projects-list") as HTMLElement;
-const projectsManager = new ProjectsManager();
 
 /** ################################################### */
 /*----------------IMPORT/EXPORT BUTTONS-------------------- */

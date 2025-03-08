@@ -1,13 +1,16 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { ErrorPopup } from "../class/ErrorPopup";
 import { Project, IProject, Role, Status } from "../class/Project";
 import { ProjectsManager } from "../class/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
 import { useState, useEffect } from "react";
 
-export function ProjectsPage() {
-  // Initializing projectsManager
-  const [projectsManager] = useState(new ProjectsManager());
+interface Props {
+  projectsManager: ProjectsManager;
+}
+
+export function ProjectsPage(props: Props) {
   // Toggle modal function
   function toggleModal(id: string) {
     const modal = document.getElementById(id) as HTMLDialogElement;
@@ -18,12 +21,14 @@ export function ProjectsPage() {
     }
   }
 
-  const [projects, setProjects] = useState<Project[]>(projectsManager.list);
-  projectsManager.onProjectCreated = () => {
-    setProjects([...projectsManager.list]);
+  const [projects, setProjects] = useState<Project[]>(
+    props.projectsManager.list
+  );
+  props.projectsManager.onProjectCreated = () => {
+    setProjects([...props.projectsManager.list]);
   };
-  projectsManager.onProjectDeleted = () => {
-    setProjects([...projectsManager.list]);
+  props.projectsManager.onProjectDeleted = () => {
+    setProjects([...props.projectsManager.list]);
   };
 
   useEffect(() => {
@@ -31,7 +36,11 @@ export function ProjectsPage() {
   }, [projects]);
 
   const projectCards = projects.map((project) => {
-    return <ProjectCard project={project} key={project.id} />;
+    return (
+      <Link to={`/project/${project.id}`} key={project.id}>
+        <ProjectCard project={project} />
+      </Link>
+    );
   });
 
   const onNewProjectClick = () => {
@@ -39,11 +48,11 @@ export function ProjectsPage() {
   };
 
   const onExport = () => {
-    projectsManager.exportAsJSON();
+    props.projectsManager.exportAsJSON();
     console.log("Projects exported.");
   };
   const onImport = () => {
-    projectsManager.importFromJSON();
+    props.projectsManager.importFromJSON();
     console.log("Projects imported.");
   };
 
@@ -66,7 +75,7 @@ export function ProjectsPage() {
     };
     try {
       // Calling NEWPROJECT function
-      const project = projectsManager.newProject(data);
+      const project = props.projectsManager.newProject(data);
       projectForm.reset();
       toggleModal("new-project-modal");
     } catch (err) {
