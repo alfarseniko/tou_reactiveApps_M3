@@ -1,11 +1,17 @@
-/*--------------------IMPORTS-------------------- */
+/** ################################################### */
+/*---------------------IMPORTS------------------------- */
+/** ################################################### */
 import { v4 as uuidv4 } from "uuid";
 
-/*--------------------EXPORTING TYPES-------------------- */
+/** ################################################### */
+/*---------------------TYPES--------------------------- */
+/** ################################################### */
 export type Status = "Pending" | "Active" | "Finished";
 export type Role = "Architect" | "Engineer" | "Developer";
 
-/*--------------------EXPORTING INTERFACES-------------------- */
+/** ################################################### */
+/*---------------------INTERFACES---------------------- */
+/** ################################################### */
 export interface IProject {
   name: string;
   description: string;
@@ -19,16 +25,19 @@ export interface ITodo {
   finishDate: Date;
 }
 
-/*--------------------EXPORTING CLASS-------------------- */
 export class Project implements IProject {
-  // Defining variables in a class to satisfy IProject
+  /** ################################################### */
+  /*----------------IPROJECT PROPERTIES------------------ */
+  /** ################################################### */
   name: string;
   description: string;
   status: Status;
   role: Role;
   finishDate: Date;
 
-  // Initiating internal properties
+  /** ################################################### */
+  /*----------------INTERNAL PROPERTIES------------------ */
+  /** ################################################### */
   ui: HTMLDivElement;
   cost: number = Math.random() * 100000000;
   progress: number = Math.random() * 100;
@@ -36,7 +45,9 @@ export class Project implements IProject {
   todo: ITodo[];
   todoUI: HTMLDivElement[];
 
-  /*--------------------CONSTRUCTOR-------------------- */
+  /** ################################################### */
+  /*--------------------CONSTRUCTOR---------------------- */
+  /** ################################################### */
   constructor(data: IProject, id = uuidv4()) {
     for (const key in data) {
       this[key] = data[key];
@@ -49,6 +60,9 @@ export class Project implements IProject {
     this.todoUI = []; // Initialize todoUI array
   }
 
+  /** ################################################### */
+  /*--------------------EDIT PROJECT--------------------- */
+  /** ################################################### */
   editProject(data: IProject) {
     // time to start working again
 
@@ -58,22 +72,18 @@ export class Project implements IProject {
 
     return this;
   }
+
+  /** ################################################### */
+  /*--------------------ADD TODO------------------------- */
+  /** ################################################### */
   addTodo(data: ITodo) {
     // this.setTodoUI(data);
     this.todo.push(data);
   }
 
-  private todoColour(status: Status) {
-    if (status == "Active") {
-      return "#007bff";
-    }
-    if (status == "Finished") {
-      return "#28a745";
-    } else {
-      return "#f4c542";
-    }
-  }
-
+  /** ################################################### */
+  /*--------------------RANDOM COLOR--------------------- */
+  /** ################################################### */
   randomColor() {
     const colors = ["#EDAE49", "#D1495B", "#00798C", "#30638E", "#003D5B"];
     return colors[Math.floor(Math.random() * colors.length)];

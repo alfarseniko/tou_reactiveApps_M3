@@ -1,8 +1,13 @@
+/** ################################################### */
+/*--------------------IMPORTS-------------------------- */
+/** ################################################### */
 import { initializeApp } from "firebase/app";
 import * as Firestore from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
-import { IProject } from "../class/Project";
 
+/** ################################################### */
+/*--------------------CONFIGURATION-------------------- */
+/** ################################################### */
 const firebaseConfig = {
   apiKey: "AIzaSyAGH5k2FQqKvFVreg2ugTWqdqq9DM2ghpY",
   authDomain: "bim-dev-masrwe.firebaseapp.com",
@@ -12,9 +17,11 @@ const firebaseConfig = {
   appId: "1:301801062903:web:0495c925a942f0b78deef2",
 };
 
+/*--------------------CONSTANTS-------------------- */
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore();
 
+/*--------------------GET COLLECTION-------------------- */
 export function getCollection<T>(path: string) {
   return Firestore.collection(
     db,
@@ -22,11 +29,13 @@ export function getCollection<T>(path: string) {
   ) as Firestore.CollectionReference<T>;
 }
 
+/*--------------------DELETE PROJECT-------------------- */
 export async function deleteProject(path: string, id: string) {
   const doc = Firestore.doc(db, `${path}/${id}`);
   await Firestore.deleteDoc(doc);
 }
 
+/*--------------------UPDATE PROJECT-------------------- */
 export async function updateProject<T extends Record<string, any>>(
   path: string,
   id: string,

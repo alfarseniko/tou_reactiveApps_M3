@@ -1,3 +1,6 @@
+/** ################################################### */
+/*--------------------IMPORTS-------------------------- */
+/** ################################################### */
 import * as React from "react";
 import { useState } from "react";
 import { deleteDoc } from "firebase/firestore";
@@ -9,21 +12,19 @@ import AddTodoForm from "./forms/AddTodoForm";
 import { Project } from "../class/Project";
 import ThreeViewer from "./ThreeViewer";
 import { deleteProject } from "../firebase";
+import { toggleModal } from "../class/HelperFunctions";
 
+/** ################################################### */
+/*--------------------INTERFACE------------------------ */
+/** ################################################### */
 interface Props {
   projectsManager: ProjectsManager;
 }
-
+/** ################################################### */
+/*--------------------REACT FUNCTION------------------- */
+/** ################################################### */
 export default function ProjectDetails(props: Props) {
   // Toggle modal function
-  function toggleModal(id: string) {
-    const modal = document.getElementById(id) as HTMLDialogElement;
-    if (modal.open) {
-      modal.close();
-    } else {
-      modal.showModal();
-    }
-  }
 
   const routeParams = useParams<{ id: string }>();
   if (!routeParams.id) {
@@ -69,6 +70,10 @@ export default function ProjectDetails(props: Props) {
     toggleModal("add-todo-modal");
     console.log(props.projectsManager.getProject);
   };
+
+  /** ################################################### */
+  /*--------------JSX RETURN VALUE----------------------- */
+  /** ################################################### */
   return (
     <div className="page" id="project-details">
       <dialog id="edit-project-modal">

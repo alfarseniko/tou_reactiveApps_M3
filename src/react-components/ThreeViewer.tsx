@@ -1,3 +1,6 @@
+/** ################################################### */
+/*--------------------IMPORTS-------------------------- */
+/** ################################################### */
 import * as React from "react";
 import * as THREE from "three";
 import { useEffect } from "react";
@@ -7,7 +10,13 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 
+/** ################################################### */
+/*--------------------REACT FUNCTION------------------- */
+/** ################################################### */
 export default function ThreeViewer() {
+  /** ################################################### */
+  /*--------------INITIALIZING VARIABLES----------------- */
+  /** ################################################### */
   let scene: THREE.Scene | null;
   let mesh: THREE.Object3D | null;
   let renderer: THREE.WebGLRenderer | null;
@@ -20,6 +29,9 @@ export default function ThreeViewer() {
   let objLoader: OBJLoader | null;
   let mtlLoader: MTLLoader | null;
 
+  /** ################################################### */
+  /*-------------------SET VIEWER------------------------ */
+  /** ################################################### */
   function setViewer() {
     scene = new THREE.Scene();
 
@@ -96,20 +108,40 @@ export default function ThreeViewer() {
       });
     });
   }
-  useEffect(() => {
-    setViewer();
-    return () => {
-      mesh?.removeFromParent();
-      mesh?.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.geometry.dispose();
-          child.material.dispose();
-        }
-      });
-      mesh = null;
-    };
-  }, []);
 
+  /** ################################################### */
+  /*--------------USE EFFECT CLEANUP--------------------- */
+  /** ################################################### */
+  useEffect(
+    () => {
+      // Calls the setViewer function when the component mounts
+      setViewer();
+
+      return () => {
+        // Cleanup function: runs when the component unmounts
+
+        // Removes the mesh from its parent in the scene, detaching it
+        mesh?.removeFromParent();
+
+        // Traverses through all child objects of the mesh (if any)
+        mesh?.traverse((child) => {
+          // If the child is a THREE.Mesh instance, dispose of its geometry and material
+          if (child instanceof THREE.Mesh) {
+            child.geometry.dispose(); // Frees up memory by disposing of geometry
+            child.material.dispose(); // Frees up memory by disposing of material
+          }
+        });
+
+        // Sets the mesh reference to null to avoid memory leaks
+        mesh = null;
+      };
+    } /* The empty dependency array means this effect runs only once when the component mounts*/,
+    []
+  );
+
+  /** ################################################### */
+  /*--------------JSX RETURN VALUE----------------------- */
+  /** ################################################### */
   return (
     <div
       id="viewer-container"

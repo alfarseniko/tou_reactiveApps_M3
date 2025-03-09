@@ -1,3 +1,6 @@
+/** ################################################### */
+/*--------------------IMPORTS-------------------------- */
+/** ################################################### */
 import * as React from "react";
 import * as Firestore from "firebase/firestore";
 import { getCollection } from "../firebase/index";
@@ -8,22 +11,18 @@ import { ProjectsManager } from "../class/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
 import SearchBox from "./SearchBox";
 import { useState, useEffect } from "react";
+import { toggleModal } from "../class/HelperFunctions";
 
+/** ################################################### */
+/*--------------------INTERFACE------------------------ */
+/** ################################################### */
 interface Props {
   projectsManager: ProjectsManager;
 }
-
+/** ################################################### */
+/*--------------------REACT FUNCTION------------------- */
+/** ################################################### */
 export function ProjectsPage(props: Props) {
-  // Toggle modal function
-  function toggleModal(id: string) {
-    const modal = document.getElementById(id) as HTMLDialogElement;
-    if (modal.open) {
-      modal.close();
-    } else {
-      modal.showModal();
-    }
-  }
-
   const [projects, setProjects] = useState<Project[]>(
     props.projectsManager.list
   );
@@ -108,6 +107,9 @@ export function ProjectsPage(props: Props) {
     }
   };
 
+  /** ################################################### */
+  /*--------------JSX RETURN VALUE----------------------- */
+  /** ################################################### */
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <dialog id="new-project-modal">
