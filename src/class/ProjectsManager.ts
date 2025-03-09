@@ -18,6 +18,12 @@ export class ProjectsManager {
   onProjectDeleted = () => {};
   onProjectEditted = () => {};
   onTodoCreated = () => {};
+  filterProjects(value: string) {
+    const filteredProjects = this.list.filter((project) => {
+      return project.name.includes(value);
+    });
+    return filteredProjects;
+  }
 
   /** ################################################### */
   /**-------------------CONSTRUCTOR---------------------- */

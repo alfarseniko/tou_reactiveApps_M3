@@ -6,6 +6,7 @@ import Todo from "./Todo";
 import EditProjectForm from "./forms/EditProjectForm";
 import AddTodoForm from "./forms/AddTodoForm";
 import { Project } from "../class/Project";
+import ThreeViewer from "./ThreeViewer";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -225,11 +226,8 @@ export default function ProjectDetails(props: Props) {
             </div>
           </div>
         </div>
-        <div
-          id="viewer-container"
-          className="dashboard-card"
-          style={{ minWidth: 0 }}
-        />
+        {/**ThreeViewer */}
+        <ThreeViewer />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { ErrorPopup } from "../class/ErrorPopup";
 import { Project, IProject, Role, Status } from "../class/Project";
 import { ProjectsManager } from "../class/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
+import SearchBox from "./SearchBox";
 import { useState, useEffect } from "react";
 
 interface Props {
@@ -54,6 +55,10 @@ export function ProjectsPage(props: Props) {
   const onImport = () => {
     props.projectsManager.importFromJSON();
     console.log("Projects imported.");
+  };
+
+  const onProjectSearch = (value: string) => {
+    setProjects(props.projectsManager.filterProjects(value));
   };
 
   const onNewProjectSubmit = (e: React.FormEvent) => {
@@ -184,6 +189,7 @@ export function ProjectsPage(props: Props) {
       </dialog>
       <header>
         <h2>Projects</h2>
+        <SearchBox onChange={onProjectSearch} />
         <div id="header-button-container">
           <div id="up-down-buttons">
             <button onClick={onExport} id="export-button">
@@ -200,7 +206,25 @@ export function ProjectsPage(props: Props) {
           </div>
         </div>
       </header>
-      <div id="projects-list">{projectCards}</div>
+      {projectCards.length > 0 ? (
+        <div id="projects-list">{projectCards}</div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "75%",
+            textAlign: "center",
+          }}
+        >
+          <p>
+            <p style={{ fontSize: "x-large" }}>Oops!</p>
+            <br />
+            <p style={{ fontSize: "large" }}>No projects were found.</p>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
