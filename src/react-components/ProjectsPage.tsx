@@ -1,4 +1,6 @@
 import * as React from "react";
+import * as Firestore from "firebase/firestore";
+import { getCollection } from "../firebase/index";
 import { Link } from "react-router-dom";
 import { ErrorPopup } from "../class/ErrorPopup";
 import { Project, IProject, Role, Status } from "../class/Project";
@@ -28,13 +30,30 @@ export function ProjectsPage(props: Props) {
   props.projectsManager.onProjectCreated = () => {
     setProjects([...props.projectsManager.list]);
   };
-  props.projectsManager.onProjectDeleted = () => {
-    setProjects([...props.projectsManager.list]);
+
+  const collection = getCollection<IProject>("/projects");
+
+  const getFirestorProjects = async () => {
+    const document = await Firestore.getDocs(collection);
+    for (const doc of document.docs) {
+      const data = doc.data();
+      const projectData: IProject = {
+        ...data,
+        finishDate: (
+          data.finishDate as unknown as Firestore.Timestamp
+        ).toDate(),
+      };
+      try {
+        props.projectsManager.newProject(projectData, doc.id);
+      } catch {
+        props.projectsManager.editProject(doc.id, projectData);
+      }
+    }
   };
 
   useEffect(() => {
-    console.log("The project state has been updated", projects);
-  }, [projects]);
+    getFirestorProjects();
+  }, []);
 
   const projectCards = projects.map((project) => {
     return (
@@ -79,8 +98,9 @@ export function ProjectsPage(props: Props) {
       finishDate: new Date(formData.get("finishDate") as string),
     };
     try {
+      Firestore.addDoc(collection, data);
       // Calling NEWPROJECT function
-      const project = props.projectsManager.newProject(data);
+      props.projectsManager.newProject(data);
       projectForm.reset();
       toggleModal("new-project-modal");
     } catch (err) {

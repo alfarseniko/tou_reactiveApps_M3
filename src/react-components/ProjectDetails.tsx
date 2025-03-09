@@ -1,12 +1,14 @@
 import * as React from "react";
 import { useState } from "react";
+import { deleteDoc } from "firebase/firestore";
 import { ProjectsManager } from "../class/ProjectsManager";
-import { Link, Router, useParams } from "react-router-dom";
+import { Link, Router, useParams, useNavigate } from "react-router-dom";
 import Todo from "./Todo";
 import EditProjectForm from "./forms/EditProjectForm";
 import AddTodoForm from "./forms/AddTodoForm";
 import { Project } from "../class/Project";
 import ThreeViewer from "./ThreeViewer";
+import { deleteProject } from "../firebase";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -23,6 +25,14 @@ export default function ProjectDetails(props: Props) {
     }
   }
 
+  const routeParams = useParams<{ id: string }>();
+  if (!routeParams.id) {
+    console.log("The ID parameter was not found.");
+    return;
+  } else {
+    console.log("The following ID was passed to the page", routeParams.id);
+  }
+
   const [projects, setProjects] = useState<Project[]>(
     props.projectsManager.list
   );
@@ -33,13 +43,6 @@ export default function ProjectDetails(props: Props) {
     setProjects([...props.projectsManager.list]);
   };
 
-  const routeParams = useParams<{ id: string }>();
-  if (!routeParams.id) {
-    console.log("The ID parameter was not found.");
-    return;
-  } else {
-    console.log("The following ID was passed to the page", routeParams.id);
-  }
   const project = props.projectsManager.getProject(routeParams.id);
   if (!project) {
     console.warn("The project wasn't found.");
@@ -47,6 +50,12 @@ export default function ProjectDetails(props: Props) {
   } else {
     console.log("The following project was found:", project);
   }
+
+  const navigateTo = useNavigate();
+  props.projectsManager.onProjectDeleted = async (id) => {
+    await deleteProject("/projects", id);
+    navigateTo("/");
+  };
 
   const todoItems = project.todo.map((todo) => {
     return <Todo todo={todo} />;
@@ -78,6 +87,15 @@ export default function ProjectDetails(props: Props) {
             {project.description}
           </p>
         </div>
+        <button
+          onClick={() => {
+            props.projectsManager.deleteProject(project.id);
+          }}
+          type="button"
+          style={{ backgroundColor: "red" }}
+        >
+          Delete Project
+        </button>
       </header>
       <div className="main-page-content">
         <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
@@ -226,8 +244,7 @@ export default function ProjectDetails(props: Props) {
             </div>
           </div>
         </div>
-        {/**ThreeViewer */}
-        <ThreeViewer />
+        {/*<ThreeViewer /> */}
       </div>
     </div>
   );

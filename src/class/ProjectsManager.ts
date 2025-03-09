@@ -3,6 +3,7 @@
 /** ################################################### */
 import { ErrorPopup } from "./ErrorPopup";
 import { IProject, ITodo, Project } from "./Project";
+import { v4 as uuidv4 } from "uuid";
 
 /** ################################################### */
 /**---------------CLASS DEFINITION--------------------- */
@@ -15,43 +16,15 @@ export class ProjectsManager {
   currentProject: string;
   // Custom callback function / event
   onProjectCreated = () => {};
-  onProjectDeleted = () => {};
+  onProjectDeleted = (id: string) => {};
   onProjectEditted = () => {};
   onTodoCreated = () => {};
-  filterProjects(value: string) {
-    const filteredProjects = this.list.filter((project) => {
-      return project.name.includes(value);
-    });
-    return filteredProjects;
-  }
-
-  /** ################################################### */
-  /**-------------------CONSTRUCTOR---------------------- */
-  /** ################################################### */
-  // CONTAINER is the HTMLElement which will house all the project cards
-  constructor() {
-    /* The container will be assigned to the UI of the object
-        and will be replaced with the HTML in the main file to
-        be rendered as project cards */
-
-    /* The following code has been written to create a default project
-       when the project starts */
-    const data: IProject = {
-      name: "Project Name",
-      description: "A normal description",
-      status: "Active",
-      role: "Architect",
-      finishDate: new Date(),
-    };
-    const project = this.newProject(data);
-    //project.ui.click();
-  }
 
   /** ################################################### */
   /**------------------NEW PROJECT----------------------- */
   /** ################################################### */
 
-  newProject(data: IProject) {
+  newProject(data: IProject, id = uuidv4()) {
     /*  The map() method iterates over the whole array and then returns a list of required elements */
     const projectNames = this.list.map((project) => {
       return project.name;
@@ -68,11 +41,8 @@ export class ProjectsManager {
       throw new Error(`The project title should be more than 5 characters.`);
     }
 
-    const project = new Project(data);
-    /*  project.UI is the PROJECT CARD
-        this.UI is the container for the project cards */
-    //this.ui.append(project.ui);
-    // data is stored in the class
+    const project = new Project(data, id);
+
     this.list.push(project);
     if (this.list.length == 1) {
       this.currentProject = this.list[0].id;
@@ -81,6 +51,20 @@ export class ProjectsManager {
     this.onProjectCreated();
 
     return project;
+  }
+
+  /** ################################################### */
+  /**-------------------DELETE PROJECT------------------- */
+  /** ################################################### */
+  deleteProject(id: string) {
+    /*  The filter() method takes a callback function in which we must return 
+        a boolean value. The filter() method checks for all true values and retains the elements while for all false values it removes from the result */
+    const remaining = this.list.filter((project) => {
+      return project.id !== id;
+    });
+    // Replacing the whole list with 'remaining' which doesnt contain the deleted element
+    this.list = remaining;
+    this.onProjectDeleted(id);
   }
 
   /** ################################################### */
@@ -110,78 +94,18 @@ export class ProjectsManager {
     if (this.isLessThanFiveChars(project.name)) {
       throw new Error(`The project title should be more than 5 characters.`);
     }
-    // DELETING UI CARD FROM MAIN PAGE
-    // const cardToDelete = document.getElementById(
-    //   this.currentProject
-    // ) as HTMLDivElement;
-    // cardToDelete.remove();
-    // Create a function to use project data to edit the project database
-    // this.deleteProject(this.currentProject);
     const edittedProject = project.editProject(data);
-    // this.setDetailsPage(edittedProject);
     this.onProjectEditted();
-    /*this.ui.append(edittedProject.ui);
-    // data is stored in the class
-    this.list.push(edittedProject);
-    // EventListener for going to details page
-    this.ui.addEventListener("click", () => {
-      const projectsPage = document.getElementById("projects-page");
-      const detailsPage = document.getElementById("project-details");
-      if (!projectsPage || !detailsPage) {
-        return;
-      }
-      projectsPage.style.display = "none";
-      detailsPage.style.display = "flex";
-      // To provide project specific info on details page
-      this.setDetailsPage(edittedProject);
-    });*/
   }
+
   /** ################################################### */
-  /**-----------SETTING DETAILS PAGE DATA---------------- */
+  /**------------------FILTER PROJECTS------------------- */
   /** ################################################### */
-  setDetailsPage(project: Project) {
-    this.currentProject = project.id;
-    const detailsPage = document.getElementById("project-details");
-    if (!detailsPage) {
-      return;
-    }
-    // Derfining a fields array with the required info about each attribute
-    const fields = [
-      { selector: "[details-page-info='name-heading']", value: project.name },
-      {
-        selector: "[details-page-info='description-heading']",
-        value: project.description,
-      },
-      { selector: "[details-page-info='name']", value: project.name },
-      {
-        selector: "[details-page-info='description']",
-        value: project.description,
-      },
-      { selector: "[details-page-info='status']", value: project.status },
-      {
-        selector: "[details-page-info='cost']",
-        value: "$" + Math.round(project.cost),
-      },
-      { selector: "[details-page-info='role']", value: project.role },
-      {
-        selector: "[details-page-info='finishDate']",
-        value: project.finishDate.toISOString().split("T")[0],
-      },
-      {
-        selector: "[details-page-info='project-initials']",
-        value: project.name[0] + project.name[1],
-      },
-    ];
-    // For loop iterates for each value
-    fields.forEach(({ selector, value }) => {
-      const element = detailsPage.querySelector(selector) as HTMLElement;
-      if (element) {
-        element.textContent = value;
-      }
-      if (element && selector === "[details-page-info='project-initials']") {
-        element.style.backgroundColor = this.randomColor();
-      }
+  filterProjects(value: string) {
+    const filteredProjects = this.list.filter((project) => {
+      return project.name.includes(value);
     });
+    return filteredProjects;
   }
 
   /** ################################################### */
@@ -196,19 +120,7 @@ export class ProjectsManager {
     });
     return project;
   }
-  /** ################################################### */
-  /**-------------------DELETE PROJECT------------------- */
-  /** ################################################### */
-  deleteProject(id: string) {
-    /*  The filter() method takes a callback function in which we must return 
-        a boolean value. The filter() method checks for all true values and retains the elements while for all false values it removes from the result */
-    const remaining = this.list.filter((project) => {
-      return project.id !== id;
-    });
-    // Replacing the whole list with 'remaining' which doesnt contain the deleted element
-    this.list = remaining;
-    this.onProjectDeleted();
-  }
+
   /** ################################################### */
   /**-------------------TOTAL COST----------------------- */
   /** ################################################### */
@@ -303,7 +215,7 @@ export class ProjectsManager {
             project.finishDate = new Date(project.finishDate);
             this.editProject(project.id, project);
           } else {
-            this.newProject(project);
+            this.newProject(project, project.id);
           }
         } catch (error) {
           new ErrorPopup(error.message);
