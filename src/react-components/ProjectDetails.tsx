@@ -4,15 +4,18 @@
 import * as React from "react";
 import { useState } from "react";
 import { ProjectsManager } from "../class/ProjectsManager";
+import { IProject, ITodo } from "../class/Project";
 import { useParams, useNavigate } from "react-router-dom";
 import Todo from "./Todo";
 import AddTodoForm from "./forms/AddTodoForm";
 import { Project } from "../class/Project";
 import ThreeViewer from "./ThreeViewer";
-import { deleteProject } from "../firebase";
+import { deleteProject, getCollection } from "../firebase";
 import { toggleModal } from "../class/HelperFunctions";
 import ProjectForm from "./forms/ProjectForm";
 import ProjectTasksList from "./ProjectTasksList";
+import * as Firestore from "firebase/firestore";
+import { db } from "../firebase";
 
 /** ################################################### */
 /*--------------------INTERFACE------------------------ */
@@ -24,8 +27,6 @@ interface Props {
 /*--------------------REACT FUNCTION------------------- */
 /** ################################################### */
 export default function ProjectDetails(props: Props) {
-  // Toggle modal function
-
   const routeParams = useParams<{ id: string }>();
   if (!routeParams.id) {
     console.log("The ID parameter was not found.");
@@ -33,6 +34,25 @@ export default function ProjectDetails(props: Props) {
   } else {
     console.log("The following ID was passed to the page", routeParams.id);
   }
+
+  /**------------CHANGE STATE AND RENDER--------------- */
+  const getFirestorTodos = async () => {
+    const doc = await Firestore.getDoc(
+      Firestore.doc(db, `/projects/${routeParams.id}`)
+    );
+    const data = doc.data();
+    if (!data) {
+      return;
+    }
+    const todoArray: ITodo[] = data.todoList;
+    for (const todo of todoArray) {
+      props.projectsManager.addTodo(todo, routeParams.id as string);
+    }
+  };
+
+  React.useEffect(() => {
+    getFirestorTodos();
+  }, []);
 
   const [projects, setProjects] = useState<Project[]>(
     props.projectsManager.list
