@@ -3,16 +3,16 @@
 /** ################################################### */
 import * as React from "react";
 import { useState } from "react";
-import { deleteDoc } from "firebase/firestore";
 import { ProjectsManager } from "../class/ProjectsManager";
-import { Link, Router, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Todo from "./Todo";
-import EditProjectForm from "./forms/EditProjectForm";
 import AddTodoForm from "./forms/AddTodoForm";
 import { Project } from "../class/Project";
 import ThreeViewer from "./ThreeViewer";
 import { deleteProject } from "../firebase";
 import { toggleModal } from "../class/HelperFunctions";
+import ProjectForm from "./forms/ProjectForm";
+import ProjectTasksList from "./ProjectTasksList";
 
 /** ################################################### */
 /*--------------------INTERFACE------------------------ */
@@ -43,6 +43,9 @@ export default function ProjectDetails(props: Props) {
   props.projectsManager.onTodoCreated = () => {
     setProjects([...props.projectsManager.list]);
   };
+  props.projectsManager.onTodoEditted = () => {
+    setProjects([...props.projectsManager.list]);
+  };
 
   const project = props.projectsManager.getProject(routeParams.id);
   if (!project) {
@@ -58,17 +61,8 @@ export default function ProjectDetails(props: Props) {
     navigateTo("/");
   };
 
-  const todoItems = project.todo.map((todo) => {
-    return <Todo todo={todo} />;
-  });
-
   const onEditProjectClick = () => {
     toggleModal("edit-project-modal");
-  };
-
-  const onAddTodoClick = () => {
-    toggleModal("add-todo-modal");
-    console.log(props.projectsManager.getProject);
   };
 
   /** ################################################### */
@@ -76,12 +70,10 @@ export default function ProjectDetails(props: Props) {
   /** ################################################### */
   return (
     <div className="page" id="project-details">
-      <dialog id="edit-project-modal">
-        <EditProjectForm projectsManager={props.projectsManager} />
-      </dialog>
-      <dialog id="add-todo-modal">
-        <AddTodoForm projectsManager={props.projectsManager} />
-      </dialog>
+      <ProjectForm
+        projectsManager={props.projectsManager}
+        id={routeParams.id}
+      />
       <header>
         <div>
           <h2 details-page-info="name-heading">{project.name}</h2>
@@ -184,70 +176,22 @@ export default function ProjectDetails(props: Props) {
               >
                 <div
                   style={{
-                    width: "80%",
+                    width: `${Math.floor(project.progress)}%`,
                     backgroundColor: "green",
                     padding: "4px 0",
-                    textAlign: "center",
+                    textAlign: "end",
+                    fontWeight: "bold",
                   }}
                 >
-                  {project.progress}
+                  {Math.floor(project.progress)}%
                 </div>
               </div>
             </div>
           </div>
-          <div className="dashboard-card" style={{ flexGrow: 1 }}>
-            <div
-              style={{
-                padding: "20px 30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <h4>To-Do</h4>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "end",
-                  columnGap: 20,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    columnGap: 10,
-                  }}
-                >
-                  <span className="material-icons-round">search</span>
-                  <input
-                    type="text"
-                    placeholder="Search To-Do's by name"
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <span
-                  id="add-todo-button"
-                  className="material-icons-round"
-                  onClick={onAddTodoClick}
-                >
-                  add
-                </span>
-              </div>
-            </div>
-            <div
-              id="todo-list"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                padding: "10px 30px",
-                rowGap: 20,
-              }}
-            >
-              {todoItems}
-            </div>
-          </div>
+          <ProjectTasksList
+            project={project}
+            projectsManager={props.projectsManager}
+          />
         </div>
         {/*<ThreeViewer /> */}
       </div>

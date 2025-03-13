@@ -9,6 +9,7 @@ import { ErrorPopup } from "../class/ErrorPopup";
 import { Project, IProject, Role, Status } from "../class/Project";
 import { ProjectsManager } from "../class/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
+import ProjectForm from "./forms/ProjectForm";
 import SearchBox from "./SearchBox";
 import { useState, useEffect } from "react";
 import { toggleModal } from "../class/HelperFunctions";
@@ -22,16 +23,23 @@ interface Props {
 /** ################################################### */
 /*--------------------REACT FUNCTION------------------- */
 /** ################################################### */
+
 export function ProjectsPage(props: Props) {
+  /**.................................................. */
+  /**-----------------PROJECT STATE-------------------- */
   const [projects, setProjects] = useState<Project[]>(
     props.projectsManager.list
   );
+
+  /**---------------ON PROJECT CREATION---------------- */
   props.projectsManager.onProjectCreated = () => {
     setProjects([...props.projectsManager.list]);
   };
 
+  /**------------RETURN FIREBASE COLLECTION------------ */
   const collection = getCollection<IProject>("/projects");
 
+  /**------------CHANGE STATE AND RENDER--------------- */
   const getFirestorProjects = async () => {
     const document = await Firestore.getDocs(collection);
     for (const doc of document.docs) {
@@ -50,10 +58,12 @@ export function ProjectsPage(props: Props) {
     }
   };
 
+  /**----------RENDER AFTER MOUNTING ONLY ONCE------------ */
   useEffect(() => {
     getFirestorProjects();
   }, []);
 
+  /**----------RETURNS PROJECT CARD COMP------------ */
   const projectCards = projects.map((project) => {
     return (
       <Link to={`/project/${project.id}`} key={project.id}>
@@ -62,49 +72,26 @@ export function ProjectsPage(props: Props) {
     );
   });
 
+  /**----------NEW PROJECT CLICK------------ */
   const onNewProjectClick = () => {
     toggleModal("new-project-modal");
   };
 
+  /**----------ON EXPORT------------ */
   const onExport = () => {
     props.projectsManager.exportAsJSON();
     console.log("Projects exported.");
   };
+
+  /**----------ON IMPORT------------ */
   const onImport = () => {
     props.projectsManager.importFromJSON();
     console.log("Projects imported.");
   };
 
+  /**----------ON PROJECT SEARCH------------ */
   const onProjectSearch = (value: string) => {
     setProjects(props.projectsManager.filterProjects(value));
-  };
-
-  const onNewProjectSubmit = (e: React.FormEvent) => {
-    const projectForm = document.getElementById("new-project-form");
-    // Checking if form exists and if it is of correct data type
-    if (!(projectForm && projectForm instanceof HTMLFormElement)) {
-      return;
-    }
-    // Preventing default behaviour of form
-    e.preventDefault();
-    const formData = new FormData(projectForm);
-    // Initializing an object of type IProject to store project data
-    let data: IProject = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      role: formData.get("role") as Role,
-      status: formData.get("status") as Status,
-      finishDate: new Date(formData.get("finishDate") as string),
-    };
-    try {
-      Firestore.addDoc(collection, data);
-      // Calling NEWPROJECT function
-      props.projectsManager.newProject(data);
-      projectForm.reset();
-      toggleModal("new-project-modal");
-    } catch (err) {
-      new ErrorPopup(err.message);
-    }
   };
 
   /** ################################################### */
@@ -112,103 +99,7 @@ export function ProjectsPage(props: Props) {
   /** ################################################### */
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
-      <dialog id="new-project-modal">
-        <form
-          onSubmit={(e) => {
-            onNewProjectSubmit(e);
-          }}
-          id="new-project-form"
-        >
-          <h2>New Project</h2>
-          <div className="input-list">
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">apartment</span>Name
-              </label>
-              <input
-                required
-                name="name"
-                type="text"
-                placeholder="What's the name of your project?"
-              />
-              <p
-                style={{
-                  color: "gray",
-                  fontSize: "var(--font-sm)",
-                  marginTop: 5,
-                  fontStyle: "italic",
-                }}
-              >
-                TIP: Give it a short name
-              </p>
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">subject</span>
-                Description
-              </label>
-              <textarea
-                name="description"
-                cols={30}
-                rows={5}
-                placeholder="Give your project a nice description! So people is jealous about it."
-                defaultValue={""}
-              />
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">person</span>Role
-              </label>
-              <select required name="role">
-                <option>Architect</option>
-                <option>Engineer</option>
-                <option>Developer</option>
-              </select>
-            </div>
-            <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">
-                  not_listed_location
-                </span>
-                Status
-              </label>
-              <select required name="status">
-                <option>Pending</option>
-                <option>Active</option>
-                <option>Finished</option>
-              </select>
-            </div>
-            <div className="form-field-container">
-              <label htmlFor="finishDate">
-                <span className="material-icons-round">calendar_month</span>
-                Finish Date
-              </label>
-              <input required name="finishDate" type="date" />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                margin: "10px 0px 10px auto",
-                columnGap: 10,
-              }}
-            >
-              <button
-                id="close-button-form"
-                type="button"
-                style={{ backgroundColor: "transparent" }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{ backgroundColor: "rgb(18, 145, 18)" }}
-              >
-                Accept
-              </button>
-            </div>
-          </div>
-        </form>
-      </dialog>
+      <ProjectForm projectsManager={props.projectsManager} id={""} />
       <header>
         <h2>Projects</h2>
         <SearchBox onChange={onProjectSearch} />

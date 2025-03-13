@@ -19,6 +19,7 @@ export class ProjectsManager {
   onProjectDeleted = (id: string) => {};
   onProjectEditted = () => {};
   onTodoCreated = () => {};
+  onTodoEditted = () => {};
 
   /** ################################################### */
   /**------------------NEW PROJECT----------------------- */
@@ -44,9 +45,6 @@ export class ProjectsManager {
     const project = new Project(data, id);
 
     this.list.push(project);
-    if (this.list.length == 1) {
-      this.currentProject = this.list[0].id;
-    }
 
     this.onProjectCreated();
 
@@ -78,6 +76,19 @@ export class ProjectsManager {
     }
     project.addTodo(data);
     this.onTodoCreated();
+  }
+  /** ################################################### */
+  /**-------------------EDIT TODO------------------------- */
+  /** ################################################### */
+
+  editTodo(data: ITodo, projectId: string, todoId: number) {
+    const project = this.getProject(projectId);
+    if (!project) {
+      return;
+    }
+    const todoData = { ...data, id: todoId };
+    project.editTodo(todoData, todoId);
+    this.onTodoEditted();
   }
 
   /** ################################################### */

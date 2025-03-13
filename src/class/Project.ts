@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 /** ################################################### */
 export type Status = "Pending" | "Active" | "Finished";
 export type Role = "Architect" | "Engineer" | "Developer";
+export type Priority = "Urgent" | "Normal Priority" | "Not Urgent";
 
 /** ################################################### */
 /*---------------------INTERFACES---------------------- */
@@ -22,7 +23,9 @@ export interface IProject {
 export interface ITodo {
   description: string;
   status: Status;
+  priority: Priority;
   finishDate: Date;
+  id: number;
 }
 
 export class Project implements IProject {
@@ -77,8 +80,15 @@ export class Project implements IProject {
   /*--------------------ADD TODO------------------------- */
   /** ################################################### */
   addTodo(data: ITodo) {
-    // this.setTodoUI(data);
-    this.todo.push(data);
+    const dataWithId = { ...data, id: this.todo.length + 1 };
+    this.todo.push(dataWithId);
+  }
+
+  /** ################################################### */
+  /*--------------------EDIT TODO------------------------- */
+  /** ################################################### */
+  editTodo(data: ITodo, id: number) {
+    this.todo[id - 1] = data;
   }
 
   /** ################################################### */
