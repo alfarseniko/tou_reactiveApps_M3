@@ -221,7 +221,7 @@ export default function ProjectDetails(props: Props) {
             projectsManager={props.projectsManager}
           />
         </div>
-        {/*<ThreeViewer /> */}
+        <ThreeViewer />
       </div>
     </div>
   );
