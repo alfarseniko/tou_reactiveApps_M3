@@ -107,4 +107,11 @@ export class Project implements IProject {
     const colors = ["#EDAE49", "#D1495B", "#00798C", "#30638E", "#003D5B"];
     return colors[Math.floor(Math.random() * colors.length)];
   }
+
+  filterTodos(value: string) {
+    const filteredTodos = this.todo.filter((todo) => {
+      return todo.description.includes(value);
+    });
+    return filteredTodos;
+  }
 }

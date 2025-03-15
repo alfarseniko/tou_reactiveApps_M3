@@ -89,6 +89,10 @@ export default function ProjectDetails(props: Props) {
     toggleModal("edit-project-modal");
   };
 
+  const onTodoSearch = (value: string) => {
+    setProjects(props.projectsManager.filterProjects(value));
+  };
+
   /** ################################################### */
   /*--------------JSX RETURN VALUE----------------------- */
   /** ################################################### */

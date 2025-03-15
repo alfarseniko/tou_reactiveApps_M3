@@ -12,6 +12,8 @@ interface Props {
 }
 
 export default function ProjectTasksList(props: Props) {
+  const [todo, setTodo] = React.useState(props.project.todo);
+
   const sampleTodo: ITodo = {
     description: "A normal task",
     status: "Active",
@@ -24,7 +26,7 @@ export default function ProjectTasksList(props: Props) {
     toggleModal("add-todo-modal");
   };
 
-  const todoItems = props.project.todo.map((todo) => {
+  const todoItems = todo.map((todo) => {
     return (
       <Todo
         todo={todo}
@@ -34,6 +36,11 @@ export default function ProjectTasksList(props: Props) {
       />
     );
   });
+
+  /**----------ON PROJECT SEARCH------------ */
+  const onTodoSearch = (value: string) => {
+    setTodo(props.project.filterTodos(value));
+  };
   return (
     <>
       <div className="dashboard-card" style={{ flexGrow: 1 }}>
@@ -63,6 +70,9 @@ export default function ProjectTasksList(props: Props) {
             >
               <span className="material-icons-round">search</span>
               <input
+                onChange={(e) => {
+                  onTodoSearch(e.target.value);
+                }}
                 type="text"
                 placeholder="Search To-Do's by name"
                 style={{ width: "100%" }}
