@@ -13,6 +13,7 @@ interface Props {
 
 export default function ProjectTasksList(props: Props) {
   const [todo, setTodo] = React.useState(props.project.todo);
+  const [project, setProject] = React.useState(props.projectsManager.list);
 
   const sampleTodo: ITodo = {
     description: "A normal task",

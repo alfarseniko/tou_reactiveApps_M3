@@ -14,6 +14,10 @@ interface Props {
 }
 
 export default function AddTodoForm(props: Props) {
+  function getIndex(todoArray: [], id: number) {
+    return todoArray.findIndex(() => props.todo.id === id);
+  }
+
   const onTodoFormSubmit = async (e: React.FormEvent) => {
     const todoForm = document.getElementById(
       "add-todo-form"
@@ -34,18 +38,19 @@ export default function AddTodoForm(props: Props) {
     };
     try {
       // Calling NEWPROJECT function
-      props.projectsManager.addTodo(data, props.project.id);
+      const todoData = { ...data, id: props.project.todo.length + 1 };
+      props.projectsManager.addTodo(todoData, props.project.id);
       todoForm.reset();
       toggleModal("add-todo-modal");
       const doc = Firestore.doc(db, `/projects/${props.project.id}`);
       await Firestore.updateDoc(doc, {
-        todoList: Firestore.arrayUnion(data),
+        todoList: Firestore.arrayUnion(todoData),
       });
     } catch (err) {
       console.error(err.message);
     }
   };
-  const onEditTodoFormSubmit = (e: React.FormEvent) => {
+  const onEditTodoFormSubmit = async (e: React.FormEvent) => {
     const todoForm = document.getElementById(
       "edit-todo-form"
     ) as HTMLFormElement;
@@ -68,6 +73,20 @@ export default function AddTodoForm(props: Props) {
       props.projectsManager.editTodo(data, props.project.id, props.todo.id);
       todoForm.reset();
       toggleModal("edit-todo-modal");
+      const doc = Firestore.doc(db, `/projects/${props.project.id}`);
+      const docSnap = await getDoc(doc);
+      if (!docSnap.exists()) {
+        return console.log("No such document!");
+      }
+      const firebaseData = docSnap.data();
+      const todoArray = firebaseData.todoList;
+
+      const index = getIndex(todoArray, props.todo.id);
+      const updatedTodo = { ...data, id: props.project.todo.length + 1 };
+      todoArray[index] = updatedTodo;
+      await Firestore.updateDoc(doc, {
+        todoList: todoArray,
+      });
     } catch (err) {
       new ErrorPopup(err.message);
     }

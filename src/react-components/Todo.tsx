@@ -20,6 +20,8 @@ interface Props {
 /*--------------------REACT FUNCTION------------------- */
 /** ################################################### */
 export default function Todo(props: Props) {
+  const [project, setProject] = React.useState(props.projectsManager.list);
+
   const onTodoClick = () => {
     toggleModal("edit-todo-modal");
   };
