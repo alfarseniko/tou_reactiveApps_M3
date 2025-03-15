@@ -3,6 +3,9 @@ import { ITodo, Priority, Project, Status } from "../../class/Project";
 import { ProjectsManager } from "../../class/ProjectsManager";
 import { ErrorPopup } from "../../class/ErrorPopup";
 import { toggleModal } from "../../class/HelperFunctions";
+import * as Firestore from "firebase/firestore";
+import { db, getCollection } from "../../firebase";
+import { getDoc, getDocs } from "firebase/firestore";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -11,7 +14,7 @@ interface Props {
 }
 
 export default function AddTodoForm(props: Props) {
-  const onTodoFormSubmit = (e: React.FormEvent) => {
+  const onTodoFormSubmit = async (e: React.FormEvent) => {
     const todoForm = document.getElementById(
       "add-todo-form"
     ) as HTMLFormElement;
@@ -34,6 +37,10 @@ export default function AddTodoForm(props: Props) {
       props.projectsManager.addTodo(data, props.project.id);
       todoForm.reset();
       toggleModal("add-todo-modal");
+      const doc = Firestore.doc(db, `/projects/${props.project.id}`);
+      await Firestore.updateDoc(doc, {
+        todoList: Firestore.arrayUnion(data),
+      });
     } catch (err) {
       console.error(err.message);
     }

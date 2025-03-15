@@ -22,11 +22,8 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore();
 
 /*--------------------GET COLLECTION-------------------- */
-export function getCollection<T>(path: string) {
-  return Firestore.collection(
-    db,
-    "/projects"
-  ) as Firestore.CollectionReference<T>;
+export function getCollection<T>(path: string = "/projects") {
+  return Firestore.collection(db, path) as Firestore.CollectionReference<T>;
 }
 
 /*--------------------DELETE PROJECT-------------------- */

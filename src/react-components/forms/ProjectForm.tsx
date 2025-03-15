@@ -4,7 +4,7 @@ import { IProject, Role, Status } from "../../class/Project";
 import { ProjectsManager } from "../../class/ProjectsManager";
 import { ErrorPopup } from "../../class/ErrorPopup";
 import { toggleModal } from "../../class/HelperFunctions";
-import { Firestore } from "firebase/firestore";
+import { Firestore, setDoc, updateDoc } from "firebase/firestore";
 import { addDoc } from "firebase/firestore";
 import { getCollection, updateProject } from "../../firebase";
 
@@ -58,6 +58,7 @@ export default function ProjectForm(props: Props) {
     };
     try {
       const newDoc = await addDoc(getCollection("/projects"), data);
+      await updateDoc(newDoc, { todoList: [] });
       const docId = newDoc.id;
       // Calling NEWPROJECT function
       props.projectsManager.newProject(data, docId);
