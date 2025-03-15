@@ -35,6 +35,14 @@ export default function ProjectDetails(props: Props) {
     console.log("The following ID was passed to the page", routeParams.id);
   }
 
+  const project = props.projectsManager.getProject(routeParams.id);
+  if (!project) {
+    console.warn("The project wasn't found.");
+    return;
+  } else {
+    console.log("The following project was found:", project);
+  }
+
   /**------------CHANGE STATE AND RENDER--------------- */
   const getFirestorTodos = async () => {
     const doc = await Firestore.getDoc(
@@ -52,6 +60,10 @@ export default function ProjectDetails(props: Props) {
 
   React.useEffect(() => {
     getFirestorTodos();
+
+    return () => {
+      project.todo = [];
+    };
   }, []);
 
   const [projects, setProjects] = useState<Project[]>(
@@ -66,14 +78,6 @@ export default function ProjectDetails(props: Props) {
   props.projectsManager.onTodoEditted = () => {
     setProjects([...props.projectsManager.list]);
   };
-
-  const project = props.projectsManager.getProject(routeParams.id);
-  if (!project) {
-    console.warn("The project wasn't found.");
-    return;
-  } else {
-    console.log("The following project was found:", project);
-  }
 
   const navigateTo = useNavigate();
   props.projectsManager.onProjectDeleted = async (id) => {

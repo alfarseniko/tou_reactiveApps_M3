@@ -1,6 +1,7 @@
 /** ################################################### */
 /*---------------------IMPORTS------------------------- */
 /** ################################################### */
+import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
 /** ################################################### */
@@ -80,7 +81,15 @@ export class Project implements IProject {
   /*--------------------ADD TODO------------------------- */
   /** ################################################### */
   addTodo(data: ITodo) {
-    const dataWithId = { ...data, id: this.todo.length + 1 };
+    console.log(data.finishDate);
+    const dataWithId = {
+      ...data,
+      finishDate:
+        data.finishDate instanceof Date
+          ? data.finishDate
+          : (data.finishDate as unknown as Timestamp).toDate(),
+      id: this.todo.length + 1,
+    };
     this.todo.push(dataWithId);
   }
 

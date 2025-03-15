@@ -35,7 +35,7 @@ export default function AddTodoForm(props: Props) {
       todoForm.reset();
       toggleModal("add-todo-modal");
     } catch (err) {
-      new ErrorPopup(err.message);
+      console.error(err.message);
     }
   };
   const onEditTodoFormSubmit = (e: React.FormEvent) => {

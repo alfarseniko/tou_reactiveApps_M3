@@ -2,7 +2,6 @@
 /*--------------------IMPORTS-------------------------- */
 /** ################################################### */
 import * as React from "react";
-import * as Firestore from "firebase/firestore";
 import { ITodo, Project, Status } from "../class/Project";
 import { todoColour, toggleModal } from "../class/HelperFunctions";
 import AddTodoForm from "./forms/AddTodoForm";
@@ -73,9 +72,7 @@ export default function Todo(props: Props) {
             </div>
           </div>
           <p style={{ textWrap: "nowrap", marginLeft: 10 }}>
-            {(props.todo.finishDate as unknown as Firestore.Timestamp)
-              .toDate()
-              .toDateString()}
+            {props.todo.finishDate.toDateString()}
           </p>
         </div>
       </div>
